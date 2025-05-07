@@ -1,0 +1,24 @@
+# Node
+node_modules/
+dist/
+.env.local
+
+# PHP/Symfony
+/var/
+/vendor/
+/.env
+.env.test
+.env
+.env.*.local
+/public/bundles/
+/var/cache/
+/var/log/
+
+# Docker/Traefik
+docker/letsencrypt/acme.json
+
+# Misc
+.idea/
+.DS_Store
+*.log
+*.sqlite

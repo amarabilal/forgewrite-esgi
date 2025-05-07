@@ -1,0 +1,70 @@
+services:
+  traefik:
+    image: traefik:v2.10
+    command:
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=contact.forgewrite@gmail.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./letsencrypt:/letsencrypt
+    networks:
+      - forgewrite
+
+  php:
+    build:
+      context: ./php
+    volumes:
+      - ../api:/var/www/api
+    environment:
+      - APP_ENV=prod
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`api.forgewrite.fr`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.api.loadbalancer.server.port=9000"
+    depends_on:
+      - db
+    networks:
+      - forgewrite
+
+  client:
+    image: node:18
+    working_dir: /app
+    volumes:
+      - ../client:/app
+    command: sh -c "npm install && npm run build && npm install -g serve && serve -s dist"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.front.rule=Host(`www.forgewrite.fr`)"
+      - "traefik.http.routers.front.entrypoints=websecure"
+      - "traefik.http.routers.front.tls.certresolver=letsencrypt"
+      - "traefik.http.services.front.loadbalancer.server.port=3000"
+    networks:
+      - forgewrite
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: forgewrite
+      POSTGRES_USER: forge
+      POSTGRES_PASSWORD: write
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - forgewrite
+
+volumes:
+  pgdata:
+
+networks:
+  forgewrite:
