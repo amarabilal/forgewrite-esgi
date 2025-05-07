@@ -1,34 +1,33 @@
 services:
-  nginx:
-    image: nginx:latest
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ../client/dist:/var/www/client
-      - ../api/public:/var/www/api/public
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - php
-      - client
-    networks:
-      - forgewrite
-
   php:
     build:
       context: ./php
     volumes:
       - ../api:/var/www/api
+    ports:
+      - "9000:9000"
     environment:
       - APP_ENV=dev
-    depends_on:
-      - db
     networks:
       - forgewrite
+    depends_on:
+      - db
+
+  client:
+    image: node:18
+    working_dir: /app
+    volumes:
+      - ../client:/app
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev"
+    networks:
+      - forgewrite
+    depends_on:
+      - php
 
   db:
     image: postgres:15
-    restart: always
     environment:
       POSTGRES_DB: forgewrite
       POSTGRES_USER: forge
@@ -38,12 +37,15 @@ services:
     networks:
       - forgewrite
 
-  client:
-    image: node:18
-    working_dir: /app
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
     volumes:
-      - ../client:/app
-    command: sh -c "npm install && npm run build"
+      - ../api/public:/var/www/html
+      - ./nginx/dev.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
     networks:
       - forgewrite
 

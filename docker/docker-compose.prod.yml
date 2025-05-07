@@ -18,6 +18,7 @@ services:
       - ./letsencrypt:/letsencrypt
     networks:
       - forgewrite
+    restart: unless-stopped
 
   php:
     build:
@@ -36,13 +37,19 @@ services:
       - db
     networks:
       - forgewrite
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   client:
     image: node:18
     working_dir: /app
     volumes:
       - ../client:/app
-    command: sh -c "npm install && npm run build && npm install -g serve && serve -s dist"
+    command: sh -c "npm install && npm run build && npm install -g serve && serve -s dist -l 3000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.front.rule=Host(`www.forgewrite.fr`)"
@@ -51,6 +58,7 @@ services:
       - "traefik.http.services.front.loadbalancer.server.port=3000"
     networks:
       - forgewrite
+    restart: unless-stopped
 
   db:
     image: postgres:15
@@ -62,6 +70,7 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - forgewrite
+    restart: unless-stopped
 
 volumes:
   pgdata:
