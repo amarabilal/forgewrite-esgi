@@ -45,17 +45,34 @@ services:
       retries: 3
 
   client:
-    image: node:18
-    working_dir: /app
-    volumes:
-      - ../client:/app
-    command: sh -c "npm install && npm run build && npm install -g serve && serve -s dist -l 3000"
+    build:
+      context: ../client
+      dockerfile: Dockerfile
     labels:
       - "traefik.enable=true"
+
+      # Serve le site sur www.forgewrite.fr
       - "traefik.http.routers.front.rule=Host(`www.forgewrite.fr`)"
       - "traefik.http.routers.front.entrypoints=websecure"
       - "traefik.http.routers.front.tls.certresolver=letsencrypt"
       - "traefik.http.services.front.loadbalancer.server.port=3000"
+
+      # Redirection HTTP forgewrite.fr vers www
+      - "traefik.http.routers.redirect-http.rule=Host(`forgewrite.fr`)"
+      - "traefik.http.routers.redirect-http.entrypoints=web"
+      - "traefik.http.routers.redirect-http.middlewares=redirect-to-www"
+
+      # Redirection HTTPS forgewrite.fr vers www
+      - "traefik.http.routers.redirect-https.rule=Host(`forgewrite.fr`)"
+      - "traefik.http.routers.redirect-https.entrypoints=websecure"
+      - "traefik.http.routers.redirect-https.tls=true"
+      - "traefik.http.routers.redirect-https.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.redirect-https.middlewares=redirect-to-www"
+
+      # Middleware de redirection → https://www.forgewrite.fr
+      - "traefik.http.middlewares.redirect-to-www.redirectregex.regex=^https?://forgewrite.fr/(.*)"
+      - "traefik.http.middlewares.redirect-to-www.redirectregex.replacement=https://www.forgewrite.fr/$${1}"
+      - "traefik.http.middlewares.redirect-to-www.redirectregex.permanent=true"
     networks:
       - forgewrite
     restart: unless-stopped
