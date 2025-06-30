@@ -1,12 +1,19 @@
-import express from "express";
-import testRoutes from "./routes/test";
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import testRoutes from './routes/test.routes';
+
+dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(cors());
 app.use(express.json());
 
-app.use("/api", testRoutes); // ⬅️ ici
+// Routes
+app.use('/api', testRoutes);
 
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`API listening on port ${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

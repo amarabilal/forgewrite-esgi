@@ -11,6 +11,9 @@ services:
       - forgewrite
     depends_on:
       - db
+    volumes:
+      - ../api:/app
+      - ../api/prisma:/app/prisma
 
   client:
     image: node:18
