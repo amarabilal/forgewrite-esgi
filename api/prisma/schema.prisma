@@ -13,7 +13,100 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Test {
-  id    Int    @id @default(autoincrement())
-  name  String
+model fw_users {
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  password_hash  String
+  username       String    @unique
+  created_at     DateTime  @default(now())
+  two_fa_secret  String?   // Optional for 2FA
+
+  books          fw_books[]
+}
+
+model fw_books {
+  id            Int           @id @default(autoincrement())
+  user_id       Int
+  title         String
+  description   String?
+  genre         String?
+  status        String?
+  created_at    DateTime      @default(now())
+
+  user          fw_users      @relation(fields: [user_id], references: [id])
+  chapters      fw_chapters[]
+  characters    fw_characters[]
+  map_items     fw_map_items[]
+  stats         fw_stats?
+}
+
+model fw_chapters {
+  id              Int            @id @default(autoincrement())
+  book_id         Int
+  title           String
+  content         String
+  order_index     Int
+  updated_at      DateTime       @updatedAt
+
+  book            fw_books       @relation(fields: [book_id], references: [id])
+  notes           fw_notes[]
+  comments        fw_comments[]
+}
+
+model fw_notes {
+  id              Int           @id @default(autoincrement())
+  chapter_id      Int
+  content         String
+  line_position   Int
+  created_at      DateTime      @default(now())
+
+  chapter         fw_chapters   @relation(fields: [chapter_id], references: [id])
+}
+
+model fw_comments {
+  id              Int           @id @default(autoincrement())
+  chapter_id      Int
+  content         String
+  created_at      DateTime      @default(now())
+
+  chapter         fw_chapters   @relation(fields: [chapter_id], references: [id])
+}
+
+model fw_characters {
+  id                     Int       @id @default(autoincrement())
+  book_id                Int
+  name                   String
+  alias                  String?
+  gender                 String?
+  age                    Int?
+  physical_description   String?
+  backstory              String?
+  role                   String?
+  relations              String?
+
+  book                   fw_books  @relation(fields: [book_id], references: [id])
+}
+
+model fw_stats {
+  id                 Int      @id @default(autoincrement())
+  book_id            Int      @unique
+  word_count         Int
+  letter_count       Int
+  total_goal         Int?
+  weekly_goal        Int?
+  deadline           DateTime?
+
+  book               fw_books @relation(fields: [book_id], references: [id])
+}
+
+model fw_map_items {
+  id            Int       @id @default(autoincrement())
+  book_id       Int
+  type          String
+  name          String
+  x             Float
+  y             Float
+  description   String?
+
+  book          fw_books  @relation(fields: [book_id], references: [id])
 }
