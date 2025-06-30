@@ -1,13 +1,12 @@
 services:
-  php:
+  api:
     build:
-      context: ./php
-    volumes:
-      - ../api:/var/www/api
+      context: ../api
+      dockerfile: Dockerfile
     ports:
-      - "9000:9000"
+      - "3000:3000"
     environment:
-      - APP_ENV=dev
+      - NODE_ENV=development
     networks:
       - forgewrite
     depends_on:
@@ -24,7 +23,7 @@ services:
     networks:
       - forgewrite
     depends_on:
-      - php
+      - api
 
   db:
     image: postgres:15
@@ -34,18 +33,6 @@ services:
       POSTGRES_PASSWORD: write
     volumes:
       - pgdata:/var/lib/postgresql/data
-    networks:
-      - forgewrite
-
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "8080:80"
-    volumes:
-      - ../api/public:/var/www/html
-      - ./nginx/dev.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - php
     networks:
       - forgewrite
 
