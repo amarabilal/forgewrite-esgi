@@ -1,12 +1,10 @@
-FROM node:18 AS build
+# Étape 1 : build Vite (Vue ou React)
+FROM node:18 AS builder
 WORKDIR /app
 COPY . .
-RUN npm install
-RUN node build.mjs
+RUN npm ci && npm run build
 
-FROM node:18 AS production
-WORKDIR /app
-RUN npm install -g serve
-COPY --from=build /app/dist /app/dist
-EXPOSE 3000
-CMD ["serve", "-s", "dist", "-l", "3000"]
+# Étape 2 : Nginx pour servir les fichiers statiques
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+EXPOSE 80

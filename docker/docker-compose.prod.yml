@@ -44,26 +44,22 @@ services:
       dockerfile: Dockerfile
     labels:
       - "traefik.enable=true"
-
-      # Serve le site sur www.forgewrite.fr
       - "traefik.http.routers.front.rule=Host(`www.forgewrite.fr`)"
       - "traefik.http.routers.front.entrypoints=websecure"
       - "traefik.http.routers.front.tls.certresolver=letsencrypt"
-      - "traefik.http.services.front.loadbalancer.server.port=3000"
+      - "traefik.http.services.front.loadbalancer.server.port=80"
 
-      # Redirection HTTP forgewrite.fr vers www
+      # Redirection HTTP forgewrite.fr → www.forgewrite.fr
       - "traefik.http.routers.redirect-http.rule=Host(`forgewrite.fr`)"
       - "traefik.http.routers.redirect-http.entrypoints=web"
       - "traefik.http.routers.redirect-http.middlewares=redirect-to-www"
 
-      # Redirection HTTPS forgewrite.fr vers www
       - "traefik.http.routers.redirect-https.rule=Host(`forgewrite.fr`)"
       - "traefik.http.routers.redirect-https.entrypoints=websecure"
       - "traefik.http.routers.redirect-https.tls=true"
       - "traefik.http.routers.redirect-https.tls.certresolver=letsencrypt"
       - "traefik.http.routers.redirect-https.middlewares=redirect-to-www"
 
-      # Middleware de redirection → https://www.forgewrite.fr
       - "traefik.http.middlewares.redirect-to-www.redirectregex.regex=^https?://forgewrite.fr/(.*)"
       - "traefik.http.middlewares.redirect-to-www.redirectregex.replacement=https://www.forgewrite.fr/\\1"
       - "traefik.http.middlewares.redirect-to-www.redirectregex.permanent=true"
@@ -72,19 +68,20 @@ services:
     restart: unless-stopped
 
   db:
-    image: postgres:15
+    image: mysql:8
     environment:
-      POSTGRES_DB: forgewrite
-      POSTGRES_USER: forge
-      POSTGRES_PASSWORD: write
+      MYSQL_DATABASE: forgewrite
+      MYSQL_USER: forge
+      MYSQL_PASSWORD: write
+      MYSQL_ROOT_PASSWORD: root
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mysqldata:/var/lib/mysql
     networks:
       - forgewrite
     restart: unless-stopped
 
 volumes:
-  pgdata:
+  mysqldata:
 
 networks:
   forgewrite:

@@ -1,112 +1,119 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-model fw_users {
-  id             Int       @id @default(autoincrement())
-  email          String    @unique
-  password_hash  String
-  username       String    @unique
-  created_at     DateTime  @default(now())
-  two_fa_secret  String?   // Optional for 2FA
-
-  books          fw_books[]
+model users {
+  id                Int       @id @default(autoincrement())
+  email             String    @unique
+  password          String
+  refresh_token     String?
+  two_factor_secret String?
+  role              String    @default("member")
+  created_at        DateTime? @default(now())
+  updated_at        DateTime? @default(now())
+  books             Book[]
 }
 
-model fw_books {
-  id            Int           @id @default(autoincrement())
-  user_id       Int
-  title         String
-  description   String?
-  genre         String?
-  status        String?
-  created_at    DateTime      @default(now())
+model Book {
+  id          Int         @id @default(autoincrement())
+  user_id     Int
+  title       String
+  description String?
+  genre       String?
+  status      String?
+  created_at  DateTime    @default(now())
+  user        users       @relation(fields: [user_id], references: [id])
+  chapters    Chapter[]
+  characters  Character[]
+  mapItems    MapItem[]
+  stat        Stat?
 
-  user          fw_users      @relation(fields: [user_id], references: [id])
-  chapters      fw_chapters[]
-  characters    fw_characters[]
-  map_items     fw_map_items[]
-  stats         fw_stats?
+  @@index([user_id], map: "Book_user_id_fkey")
 }
 
-model fw_chapters {
-  id              Int            @id @default(autoincrement())
-  book_id         Int
-  title           String
-  content         String
-  order_index     Int
-  updated_at      DateTime       @updatedAt
+model Chapter {
+  id          Int       @id @default(autoincrement())
+  book_id     Int
+  title       String
+  content     String?
+  order_index Int       @default(0)
+  updated_at  DateTime  @default(now())
+  book        Book      @relation(fields: [book_id], references: [id])
+  comments    Comment[]
+  notes       Note[]
 
-  book            fw_books       @relation(fields: [book_id], references: [id])
-  notes           fw_notes[]
-  comments        fw_comments[]
+  @@index([book_id], map: "Chapter_book_id_fkey")
 }
 
-model fw_notes {
-  id              Int           @id @default(autoincrement())
-  chapter_id      Int
-  content         String
-  line_position   Int
-  created_at      DateTime      @default(now())
+model Note {
+  id            Int      @id @default(autoincrement())
+  chapter_id    Int
+  content       String
+  line_position Int?
+  created_at    DateTime @default(now())
+  chapter       Chapter  @relation(fields: [chapter_id], references: [id])
 
-  chapter         fw_chapters   @relation(fields: [chapter_id], references: [id])
+  @@index([chapter_id], map: "Note_chapter_id_fkey")
 }
 
-model fw_comments {
-  id              Int           @id @default(autoincrement())
-  chapter_id      Int
-  content         String
-  created_at      DateTime      @default(now())
+model Comment {
+  id         Int      @id @default(autoincrement())
+  chapter_id Int
+  content    String
+  created_at DateTime @default(now())
+  chapter    Chapter  @relation(fields: [chapter_id], references: [id])
 
-  chapter         fw_chapters   @relation(fields: [chapter_id], references: [id])
+  @@index([chapter_id], map: "Comment_chapter_id_fkey")
 }
 
-model fw_characters {
-  id                     Int       @id @default(autoincrement())
-  book_id                Int
-  name                   String
-  alias                  String?
-  gender                 String?
-  age                    Int?
-  physical_description   String?
-  backstory              String?
-  role                   String?
-  relations              String?
+model Character {
+  id                   Int     @id @default(autoincrement())
+  book_id              Int
+  name                 String
+  alias                String?
+  gender               String?
+  age                  Int?
+  physical_description String?
+  backstory            String?
+  role                 String?
+  relations            String?
+  book                 Book    @relation(fields: [book_id], references: [id])
 
-  book                   fw_books  @relation(fields: [book_id], references: [id])
+  @@index([book_id], map: "Character_book_id_fkey")
 }
 
-model fw_stats {
-  id                 Int      @id @default(autoincrement())
-  book_id            Int      @unique
-  word_count         Int
-  letter_count       Int
-  total_goal         Int?
-  weekly_goal        Int?
-  deadline           DateTime?
+model MapItem {
+  id          Int         @id @default(autoincrement())
+  book_id     Int
+  type        MapItemType
+  name        String
+  x           Float
+  y           Float
+  description String?
+  book        Book        @relation(fields: [book_id], references: [id])
 
-  book               fw_books @relation(fields: [book_id], references: [id])
+  @@index([book_id], map: "MapItem_book_id_fkey")
 }
 
-model fw_map_items {
-  id            Int       @id @default(autoincrement())
-  book_id       Int
-  type          String
-  name          String
-  x             Float
-  y             Float
-  description   String?
+model Stat {
+  id           Int       @id @default(autoincrement())
+  book_id      Int       @unique
+  word_count   Int       @default(0)
+  letter_count Int       @default(0)
+  total_goal   Int?
+  weekly_goal  Int?
+  deadline     DateTime?
+  book         Book      @relation(fields: [book_id], references: [id])
+}
 
-  book          fw_books  @relation(fields: [book_id], references: [id])
+enum MapItemType {
+  city
+  place
+  route
 }

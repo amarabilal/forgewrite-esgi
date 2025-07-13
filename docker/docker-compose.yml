@@ -1,4 +1,21 @@
 services:
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: forgewrite
+      MYSQL_USER: forge
+      MYSQL_PASSWORD: write
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysqldata:/var/lib/mysql
+    networks:
+      - forgewrite
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   api:
     build:
       context: ../api
@@ -10,7 +27,8 @@ services:
     networks:
       - forgewrite
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - ../api:/app
       - ../api/prisma:/app/prisma
@@ -28,19 +46,8 @@ services:
     depends_on:
       - api
 
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: forgewrite
-      POSTGRES_USER: forge
-      POSTGRES_PASSWORD: write
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - forgewrite
-
 volumes:
-  pgdata:
+  mysqldata:
 
 networks:
   forgewrite:
