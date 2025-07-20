@@ -1,20 +1,18 @@
-# Étape de build
-FROM node:18
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copie des dépendances
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
-# Copie de tout le reste (dont prisma)
 COPY . .
 
-# Génération du client Prisma
-RUN npx prisma generate
+FROM node:18-alpine
 
-# Port exposé
-EXPOSE 3000
+WORKDIR /app
 
-# Lancement de l'application
-CMD ["node", "server.js"]
+COPY --from=builder /app /app
+
+RUN npm ci --omit=dev
+
+CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
