@@ -3,7 +3,7 @@ import { useAuthStore } from '@/store/authStore'
 import router from '@/router'
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: 'https://api.forgewrite.fr:/api',
   withCredentials: true
 })
 
