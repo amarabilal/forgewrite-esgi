@@ -161,6 +161,7 @@ const filteredBooks = computed(() => {
 
 <style scoped>
 .dashboard {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   padding-top: 100px;
   padding-bottom: 50px;
   width: 100%;

@@ -11,7 +11,9 @@
               Elle vous offre un environnement innovant pour faciliter l'écriture de votre livre,
               structurer votre manuscrit, stimuler votre créativité et perfectionner votre texte.
             </p>
-            <button class="btn-primary">Commencer</button>
+            <button @click="goToDashboard" class="btn-primary-image">
+              <img src="@/assets/landing/button.png" alt="Commencer" />
+            </button>
           </div>
           <div class="hero-right">
             <div class="hero-illustration">
@@ -154,18 +156,27 @@
 </template>
 
 <script setup lang="ts">
-// Page temporaire d'accueil
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const goToDashboard = () => {
+  router.push('/dashboard')
+}
 </script>
 
 <style scoped>
 /* Global Styles */
 .landing-page {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.6;
   color: #333;
   background-color: #FCF8ED;
   overflow-x: hidden;
   /* Prevent horizontal scrolling */
+}
+
+.landing-page p,h2{
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .container {
@@ -181,6 +192,11 @@
   display: flex;
   align-items: center;
   min-height: 600px;
+}
+
+.hero-left {
+  flex: 1;
+  padding: 2rem;
 }
 
 .hero-content {
@@ -220,6 +236,24 @@
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary-image {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s;
+  padding: 0;
+}
+
+.btn-primary-image:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+
+.btn-primary-image img {
+  width: auto;
+  height: 60px;
+  display: block;
 }
 
 /* Hero Illustration */
