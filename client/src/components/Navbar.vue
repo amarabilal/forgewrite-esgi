@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar">
     <div class="nav-left">
-      <RouterLink to="/">📝 ForgeWrite</RouterLink>
+      <RouterLink to="/" class="logo">ForgeWrite</RouterLink>
     </div>
 
     <div class="nav-right">
@@ -35,30 +35,63 @@
 </script>
 <style scoped>
   .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding: 1rem 2rem;
-    background-color: #f4f1ec;
-    border-bottom: 1px solid #ccc;
+    background-color: #3C68C2;
+    border-bottom: 1px solid #FCF8ED;
+  }
+  
+  .nav-right {
+    display: flex;
+    align-items: center;
   }
   .nav-left a,
   .nav-right a {
     margin: 0 1rem;
     text-decoration: none;
-    color: #5a3e2b;
+    color: #FCF8ED;
     font-weight: bold;
+    transition: opacity 0.3s ease;
   }
+  
+  .logo {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+  }
+  
+  .nav-left a:hover,
+  .nav-right a:hover {
+    opacity: 0.8;
+  }
+  
   .username {
     margin: 0 1rem;
-    color: #999;
+    color: #FCF8ED;
+    opacity: 0.8;
     text-decoration: none;
     cursor: pointer;
   }
 
   button {
     background: transparent;
-    border: none;
-    color: #a03c3c;
+    border: 1px solid #FCF8ED;
+    color: #FCF8ED;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
     cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  button:hover {
+    background: #FCF8ED;
+    color: #3C68C2;
   }
 </style>

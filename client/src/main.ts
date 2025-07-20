@@ -11,6 +11,17 @@ import piniaPersistedstate from 'pinia-plugin-persistedstate'
 import api from '@/services/api'
 import 'quill/dist/quill.snow.css'
 
+// Global CSS reset
+const globalStyles = `
+  body {
+    margin: 0;
+    padding: 0;
+  }
+`
+const styleElement = document.createElement('style')
+styleElement.textContent = globalStyles
+document.head.appendChild(styleElement)
+
 const app = createApp(App)
 
 const pinia = createPinia()
