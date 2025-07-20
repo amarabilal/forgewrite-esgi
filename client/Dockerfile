@@ -1,10 +1,11 @@
-# Étape 1 : build Vite (Vue ou React)
-FROM node:18 AS builder
-WORKDIR /app
-COPY . .
-RUN npm ci && npm run build
+FROM node:18
 
-# Étape 2 : Nginx pour servir les fichiers statiques
-FROM nginx:alpine
-COPY --from=builder /app/dist /usr/share/nginx/html
-EXPOSE 80
+WORKDIR /app
+
+COPY . .
+
+RUN npm install
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]

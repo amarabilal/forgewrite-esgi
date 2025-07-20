@@ -32,9 +32,11 @@ model Book {
   chapters    Chapter[]
   characters  Character[]
   mapItems    MapItem[]
+  comments  Comment[]
   stat        Stat?
 
   @@index([user_id], map: "Book_user_id_fkey")
+  @@map("book")
 }
 
 model Chapter {
@@ -44,11 +46,11 @@ model Chapter {
   content     String?
   order_index Int       @default(0)
   updated_at  DateTime  @default(now())
-  book        Book      @relation(fields: [book_id], references: [id])
-  comments    Comment[]
+  book        Book      @relation(fields: [book_id], references: [id], onDelete: Cascade) // ✅
   notes       Note[]
 
   @@index([book_id], map: "Chapter_book_id_fkey")
+  @@map("chapter")
 }
 
 model Note {
@@ -57,19 +59,21 @@ model Note {
   content       String
   line_position Int?
   created_at    DateTime @default(now())
-  chapter       Chapter  @relation(fields: [chapter_id], references: [id])
+  chapter       Chapter  @relation(fields: [chapter_id], references: [id], onDelete: Cascade) // ✅
 
   @@index([chapter_id], map: "Note_chapter_id_fkey")
+  @@map("note")
 }
 
 model Comment {
   id         Int      @id @default(autoincrement())
-  chapter_id Int
+  book_id    Int
   content    String
   created_at DateTime @default(now())
-  chapter    Chapter  @relation(fields: [chapter_id], references: [id])
+  book       Book     @relation(fields: [book_id], references: [id], onDelete: Cascade)
 
-  @@index([chapter_id], map: "Comment_chapter_id_fkey")
+  @@index([book_id], map: "Comment_book_id_fkey")
+  @@map("comment")
 }
 
 model Character {
@@ -83,9 +87,10 @@ model Character {
   backstory            String?
   role                 String?
   relations            String?
-  book                 Book    @relation(fields: [book_id], references: [id])
+  book                 Book    @relation(fields: [book_id], references: [id], onDelete: Cascade) // ✅
 
   @@index([book_id], map: "Character_book_id_fkey")
+  @@map("character")
 }
 
 model MapItem {
@@ -96,9 +101,10 @@ model MapItem {
   x           Float
   y           Float
   description String?
-  book        Book        @relation(fields: [book_id], references: [id])
+  book        Book        @relation(fields: [book_id], references: [id], onDelete: Cascade) // ✅
 
   @@index([book_id], map: "MapItem_book_id_fkey")
+  @@map("mapitem")
 }
 
 model Stat {
@@ -109,7 +115,8 @@ model Stat {
   total_goal   Int?
   weekly_goal  Int?
   deadline     DateTime?
-  book         Book      @relation(fields: [book_id], references: [id])
+  book         Book      @relation(fields: [book_id], references: [id], onDelete: Cascade) // ✅
+  @@map("stat")
 }
 
 enum MapItemType {

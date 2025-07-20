@@ -2,21 +2,30 @@
     "name": "forgewrite-client",
     "version": "0.0.1",
     "scripts": {
-      "dev": "vite",
-      "build": "vite build",
-      "serve": "vite preview"
+        "dev": "vite",
+        "build": "vite build",
+        "serve": "vite preview"
     },
     "dependencies": {
-      "vue": "^3.4.15",
-      "vue-router": "^4.3.0",
-      "pinia": "^2.1.7",
-      "axios": "^1.6.8"
+        "@tiptap/starter-kit": "^3.0.7",
+        "@tiptap/vue-3": "^3.0.7",
+        "@vue-flow/controls": "^1.1.2",
+        "@vue-flow/core": "^1.45.0",
+        "@vueup/vue-quill": "^1.2.0",
+        "axios": "^1.10.0",
+        "html2pdf.js": "^0.10.3",
+        "pinia": "^2.3.1",
+        "pinia-plugin-persistedstate": "^2.4.0",
+        "qrcode": "^1.5.4",
+        "quill": "^2.0.3",
+        "vue": "^3.4.15",
+        "vue-router": "^4.5.1",
+        "vuedraggable": "^2.24.3"
     },
     "devDependencies": {
-      "@vitejs/plugin-vue": "^5.0.4",
-      "typescript": "^5.2.2",
-      "vite": "^5.1.4",
-      "vue-tsc": "^1.8.8"
+        "@vitejs/plugin-vue": "^5.0.4",
+        "typescript": "^5.2.2",
+        "vite": "^5.1.4",
+        "vue-tsc": "^1.8.8"
     }
-  }
-  
+}

@@ -12,8 +12,6 @@ router.get('/', commentController.getAllComments);
 // GET /api/comments/:id - Get a comment by ID
 router.get('/:id', commentController.getCommentById);
 
-// GET /api/chapters/:id/comments - All comments for a chapter
-router.get('/../chapters/:id/comments', commentController.getCommentsByChapterId);
 
 // POST /api/comments - Create a comment
 router.post('/', commentController.createComment);
