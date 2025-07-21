@@ -1,10 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const bookController = require('../controllers/bookController');
-const chapterController = require('../controllers/chapterController')
-const characterController = require('../controllers/characterController')
-const mapItemController = require('../controllers/mapItemController');
-const commentController = require('../controllers/commentController');
 const authenticateToken = require('../../middleware/authMiddleware');
 
 // All routes protected by JWT auth
@@ -24,13 +20,5 @@ router.put('/:id', bookController.updateBook);
 
 // DELETE /api/books/:id - Delete a book
 router.delete('/:id', bookController.deleteBook);
-
-router.get('/:bookId/chapters', chapterController.getChaptersByBookId)
-
-router.get('/:id/characters', characterController.getCharactersByBookId)
-
-router.get('/:id/map-items', mapItemController.getMapItemsByBookId);
-
-router.get('/:id/comments', commentController.getCommentsByBookId);
 
 module.exports = router;
