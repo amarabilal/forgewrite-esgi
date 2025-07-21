@@ -45,27 +45,15 @@ exports.createBook = async (req, res) => {
         title: title.trim(),
         description: description || null,
         genre: genre || null,
-        status: typeof status === 'string' ? status : 'en cours',
+        status: status || null,
       },
     });
-    await prisma.stat.create({
-      data: {
-        book_id: newBook.id,
-        total_goal: 50000,
-        weekly_goal: 5000,
-        deadline: null,
-      },
-    });
-    res.status(201).json({
-      message: 'Book created successfully.',
-      data: newBook,
-    });
+    res.status(201).json({ message: 'Book created successfully.', data: newBook });
   } catch (error) {
     console.error('Error creating book:', error);
     res.status(500).json({ message: 'Internal server error.' });
   }
 };
-
 
 // PUT /api/books/:id - Update a book if it belongs to the user
 exports.updateBook = async (req, res) => {
@@ -100,27 +88,19 @@ exports.updateBook = async (req, res) => {
 
 // DELETE /api/books/:id - Delete a book if it belongs to the user
 exports.deleteBook = async (req, res) => {
-  const bookId = parseInt(req.params.id, 10)
+  const bookId = parseInt(req.params.id, 10);
   if (isNaN(bookId)) {
-    return res.status(400).json({ message: 'Invalid book ID.' })
+    return res.status(400).json({ message: 'Invalid book ID.' });
   }
-
   try {
-    const book = await prisma.book.findUnique({
-      where: { id: bookId }
-    })
-
+    const book = await prisma.book.findUnique({ where: { id: bookId } });
     if (!book || book.user_id !== req.user.userId) {
-      return res.status(404).json({ message: 'Book not found.' })
+      return res.status(404).json({ message: 'Book not found.' });
     }
-
-    await prisma.book.delete({
-      where: { id: bookId }
-    })
-
-    res.json({ message: 'Book and all related data deleted successfully.' })
+    await prisma.book.delete({ where: { id: bookId } });
+    res.json({ message: 'Book deleted successfully.' });
   } catch (error) {
-    console.error('Error deleting book:', error)
-    res.status(500).json({ message: 'Internal server error.' })
+    console.error('Error deleting book:', error);
+    res.status(500).json({ message: 'Internal server error.' });
   }
-}
+};

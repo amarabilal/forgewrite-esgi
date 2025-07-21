@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const chapterController = require('../controllers/chapterController');
-const noteController = require('../controllers/noteController');
 const authenticateToken = require('../../middleware/authMiddleware');
 
 // All routes protected by JWT auth
@@ -24,7 +23,5 @@ router.put('/:id', chapterController.updateChapter);
 
 // DELETE /api/chapters/:id - Delete a chapter
 router.delete('/:id', chapterController.deleteChapter);
-
-router.get('/:id/notes', noteController.getNotesByChapterId);
 
 module.exports = router;
