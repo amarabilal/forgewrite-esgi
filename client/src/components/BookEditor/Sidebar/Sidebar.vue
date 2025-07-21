@@ -7,7 +7,7 @@
       class="sidebar-item"
       @click="select(item.label)"
     >
-      <span class="icon">{{ item.icon }}</span>
+      <img :src="item.icon" :alt="item.label" class="icon" />
       <span class="text">{{ item.label }}</span>
     </div>
   </aside>
@@ -16,18 +16,28 @@
 <script setup lang="ts">
 import { defineEmits, ref } from 'vue'
 
+// Import icons
+import editIcon from '@/assets/icons/edit-ico.svg?url'
+import persoIcon from '@/assets/icons/perso-ico.svg?url'
+import goalIcon from '@/assets/icons/goal-ico.svg?url'
+import carteIcon from '@/assets/icons/carte-ico.svg?url'
+import langIcon from '@/assets/icons/lang-ico.svg?url'
+import aiIcon from '@/assets/icons/ai-ico.svg?url'
+import commentIcon from '@/assets/icons/comment-ico.svg?url'
+import exportIcon from '@/assets/icons/export-ico.svg?url'
+
 const emit = defineEmits(['select'])
 const selected = ref('Écrire')
 
 const menu = [
-  { label: 'Écrire', icon: '📝' },
-  { label: 'Personnages', icon: '🧙' },
-  { label: 'Objectifs', icon: '🎯' },
-  { label: 'Carte mentale', icon: '🗺️' },
-  { label: 'Trouver des mots', icon: '🔍' },
-  { label: 'Assistant d’écriture', icon: '🤖' },
-  { label: 'Commentaires', icon: '💬' },
-  { label: 'Exporter en PDF', icon: '📤' }
+  { label: 'Écrire', icon: editIcon },
+  { label: 'Personnages', icon: persoIcon },
+  { label: 'Objectifs', icon: goalIcon },
+  { label: 'Carte mentale', icon: carteIcon },
+  { label: 'Trouver des mots', icon: langIcon },
+  { label: 'Assistant d\'écriture', icon: aiIcon },
+  { label: 'Commentaires', icon: commentIcon },
+  { label: 'Exporter en PDF', icon: exportIcon }
 ]
 
 function select(label: string) {
@@ -38,8 +48,9 @@ function select(label: string) {
 
 <style scoped>
 .sidebar {
+  padding-top: 70px !important; /* Adjusted padding for better alignment */
   width: 220px;
-  background-color: #faf6f0;
+  background-color: #3C68C2;
   padding: 1rem 0;
   border-right: 1px solid #ddd;
   display: flex;
@@ -48,29 +59,46 @@ function select(label: string) {
 
 .sidebar-item {
   padding: 0.75rem 1.5rem;
+  margin: 0.25rem 1rem;
   display: flex;
   align-items: center;
   cursor: pointer;
   font-weight: 500;
-  transition: background 0.2s;
+  transition: all 0.3s ease;
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  position: relative;
 }
 
 .sidebar-item:hover {
-  background-color: #f1e7dd;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
 .sidebar-item.active {
-  background-color: #e5d6c8;
-  color: #5a3e2b;
-  font-weight: 700;
+  background-color: white;
+  color: #3C68C2;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: translateX(2px);
 }
 
 .icon {
+  width: 18px;
+  height: 18px;
   margin-right: 0.75rem;
-  font-size: 1.2rem;
+  filter: brightness(0) invert(1);
+  transition: all 0.3s ease;
+}
+
+.sidebar-item.active .icon {
+  filter: invert(27%) sepia(55%) saturate(2341%) hue-rotate(211deg) brightness(89%) contrast(89%);
+  transform: scale(1.05);
 }
 
 .text {
-  font-size: 1rem;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  white-space: nowrap;
 }
 </style>

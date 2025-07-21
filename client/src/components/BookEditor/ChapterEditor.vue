@@ -1,5 +1,13 @@
 <template>
   <div class="editor">
+    <!-- Toast notification -->
+    <div :class="['toast', { 'toast-visible': showToast }]">
+      <div class="toast-content">
+        <span>✅</span>
+        <span>Chapitre sauvegardé avec succès!</span>
+      </div>
+    </div>
+    
     <div v-if="chapterStore.selectedChapterId" class="editor-layout">
       <div class="left">
         <div class="toolbar">
@@ -15,19 +23,31 @@
         </div>
 
         <EditorContent :editor="editor" class="wysiwyg" />
-        <p class="saved-indicator" v-if="saved">✅ Sauvegardé</p>
       </div>
 
       <aside class="right" v-if="showNotes">
         <div class="notes">
-          <h3>🗒️ Notes</h3>
-          <ul>
-            <li v-for="note in notes" :key="note.id">
-              <input v-model="note.content" @blur="updateNote(note)" />
-              <button @click="deleteNote(note.id)">🗑️</button>
+          <div class="notes-header">
+            <img :src="noteIcon" alt="Notes" class="notes-icon" />
+            <h3>Notes</h3>
+          </div>
+          <ul class="notes-list">
+            <li v-for="note in notes" :key="note.id" class="note-item">
+              <input 
+                v-model="note.content" 
+                @blur="updateNote(note)" 
+                class="note-input"
+                placeholder="Tapez votre note ici..."
+              />
+              <button @click="deleteNote(note.id)" class="delete-btn" title="Supprimer la note">
+                <img :src="trashIcon" alt="Supprimer" class="delete-icon" />
+              </button>
             </li>
           </ul>
-          <button @click="createNote">➕ Ajouter une note</button>
+          <button @click="createNote" class="add-note-btn">
+            <img :src="addIcon" alt="Ajouter" class="add-note-icon" />
+            <span>Ajouter une note</span>
+          </button>
         </div>
       </aside>
     </div>
@@ -45,11 +65,17 @@ import StarterKit from '@tiptap/starter-kit'
 import { useChapterStore } from '@/store/useChapterStore'
 import { useNoteStore, type Note } from '@/store/useNoteStore'
 
+// Import icons
+import noteIcon from '@/assets/icons/note-ico.svg?url'
+import addIcon from '@/assets/icons/add-ico.svg?url'
+import trashIcon from '@/assets/icons/trash-ico.svg?url'
+
 const chapterStore = useChapterStore()
 const noteStore = useNoteStore()
 
 const saved = ref(false)
 const showNotes = ref(true)
+const showToast = ref(false)
 const DEFAULT_CONTENT = '<p>Écrivez votre chapitre ici...</p>'
 
 const notes = ref<Note[]>([])
@@ -64,8 +90,11 @@ const editor = useEditor({
 
     if (html !== original) {
       await chapterStore.updateChapterContent(html)
-      saved.value = true
-      setTimeout(() => (saved.value = false), 1500)
+      // Show toast notification
+      showToast.value = true
+      setTimeout(() => {
+        showToast.value = false
+      }, 3000)
     }
   }
 })
@@ -123,6 +152,34 @@ const deleteNote = async (id: number) => {
   background: #fff;
   height: 100%;
   overflow-y: auto;
+  position: relative;
+}
+
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: #28a745;
+  color: white;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 4px 20px rgba(40, 167, 69, 0.3);
+  z-index: 1000;
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+}
+
+.toast-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .editor-layout {
@@ -186,12 +243,6 @@ const deleteNote = async (id: number) => {
   border-radius: 4px;
 }
 
-.saved-indicator {
-  margin-top: 0.5rem;
-  color: green;
-  font-size: 0.9rem;
-}
-
 .no-selection {
   text-align: center;
   color: #888;
@@ -201,31 +252,118 @@ const deleteNote = async (id: number) => {
 .notes {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
-.notes ul {
-  list-style: none;
-  padding: 0;
-}
-
-.notes li {
+.notes-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.notes input {
+.notes-icon {
+  width: 20px;
+  height: 20px;
+  filter: invert(27%) sepia(55%) saturate(2341%) hue-rotate(211deg) brightness(89%) contrast(89%);
+}
+
+.notes-header h3 {
+  margin: 0;
+  color: #3C68C2;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.notes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   flex: 1;
-  padding: 0.3rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  overflow-y: auto;
 }
 
-.notes button {
+.note-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.note-item:hover {
+  box-shadow: 0 2px 8px rgba(60, 104, 194, 0.1);
+  transform: translateY(-1px);
+}
+
+.note-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+  background-color: #fafafa;
+}
+
+.note-input:focus {
+  outline: none;
+  border-color: #3C68C2;
+  background-color: white;
+}
+
+.delete-btn {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.1rem;
+  padding: 4px;
+  border-radius: 4px;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.delete-icon {
+  width: 14px;
+  height: 14px;
+  filter: invert(15%) sepia(94%) saturate(5588%) hue-rotate(355deg) brightness(91%) contrast(109%);
+}
+
+.add-note-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: transparent;
+  border: 2px dashed #3C68C2;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #3C68C2;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
+}
+
+.add-note-btn:hover {
+  background-color: rgba(60, 104, 194, 0.05);
+  transform: translateY(-1px);
+}
+
+.add-note-icon {
+  width: 16px;
+  height: 16px;
 }
 </style>

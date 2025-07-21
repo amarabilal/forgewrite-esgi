@@ -173,7 +173,6 @@ const handleLogin = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 40px;
 }
 
 .login-illustration {

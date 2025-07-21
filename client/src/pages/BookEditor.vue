@@ -3,8 +3,6 @@
     <Sidebar @select="setActiveView" />
 
     <div class="workspace">
-      <HeaderBar />
-
       <div class="content">
         <template v-if="activeView === 'Écrire' && isReady">
           <ChapterPanel />
@@ -82,6 +80,7 @@ watch(
 }
 
 .workspace {
+  padding-top: 70px;
   flex: 1;
   display: flex;
   flex-direction: column;
