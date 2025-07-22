@@ -11,14 +11,6 @@ const commentRoutes = require('./src/routes/commentRoutes');
 const characterRoutes = require('./src/routes/characterRoutes');
 const mapItemRoutes = require('./src/routes/mapItemRoutes');
 const statRoutes = require('./src/routes/statRoutes');
-const adminBookRoutes = require('./src/routes/adminBookRoutes');
-const adminChapterRoutes = require('./src/routes/adminChapterRoutes');
-const adminNoteRoutes = require('./src/routes/adminNoteRoutes');
-const adminCommentRoutes = require('./src/routes/adminCommentRoutes');
-const adminCharacterRoutes = require('./src/routes/adminCharacterRoutes');
-const adminMapItemRoutes = require('./src/routes/adminMapItemRoutes');
-const adminStatRoutes = require('./src/routes/adminStatRoutes');
-
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,8 +24,6 @@ app.use(cors({
   ],
   credentials: true
 }));
-
-app.use('/api-docs', swaggerRoutes);
 
 // Middlewares
 app.use(express.json());
@@ -49,13 +39,7 @@ app.use('/api/comments', commentRoutes);
 app.use('/api/characters', characterRoutes);
 app.use('/api/map-items', mapItemRoutes);
 app.use('/api/stats', statRoutes);
-app.use('/api/admin/books', adminBookRoutes);
-app.use('/api/admin/chapters', adminChapterRoutes);
-app.use('/api/admin/notes', adminNoteRoutes);
-app.use('/api/admin/comments', adminCommentRoutes);
-app.use('/api/admin/characters', adminCharacterRoutes);
-app.use('/api/admin/map-items', adminMapItemRoutes);
-app.use('/api/admin/stats', adminStatRoutes);
+
 // Basic route
 app.get('/', (req, res) => {
   res.send('Auth API is running!');
