@@ -20,6 +20,16 @@
           <button class="toggle-notes" @click="showNotes = !showNotes">
             {{ showNotes ? '➖ Masquer les notes' : '➕ Afficher les notes' }}
           </button>
+          <button 
+            @click="improveChapterWithAI" 
+            :disabled="isImproving"
+            class="ai-button"
+            title="Améliorer avec l'IA"
+          >
+            <img :src="aiIcon" alt="IA" class="ai-icon" />
+            <span v-if="isImproving">Amélioration...</span>
+            <span v-else>IA</span>
+          </button>
         </div>
 
         <EditorContent :editor="editor" class="wysiwyg" />
@@ -64,11 +74,13 @@ import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import { useChapterStore } from '@/store/useChapterStore'
 import { useNoteStore, type Note } from '@/store/useNoteStore'
+import { improveText } from '@/services/deepseek' 
 
 // Import icons
 import noteIcon from '@/assets/icons/note-ico.svg?url'
 import addIcon from '@/assets/icons/add-ico.svg?url'
 import trashIcon from '@/assets/icons/trash-ico.svg?url'
+import aiIcon from '@/assets/icons/ai-ico.svg?url'
 
 const chapterStore = useChapterStore()
 const noteStore = useNoteStore()
@@ -76,6 +88,7 @@ const noteStore = useNoteStore()
 const saved = ref(false)
 const showNotes = ref(true)
 const showToast = ref(false)
+const isImproving = ref(false)
 const DEFAULT_CONTENT = '<p>Écrivez votre chapitre ici...</p>'
 
 const notes = ref<Note[]>([])
@@ -102,6 +115,42 @@ const editor = useEditor({
 const cmd = (command: keyof typeof editor.value.commands, options = {}) => {
   if (!editor.value?.commands[command]) return
   editor.value.commands[command](options)
+}
+
+const improveChapterWithAI = async () => {
+  if (!editor.value || isImproving.value) return
+  
+  const currentContent = editor.value.getHTML()
+  const textContent = editor.value.getText() // Get plain text without HTML tags
+  
+  if (!textContent.trim() || textContent.trim() === 'Écrivez votre chapitre ici...') {
+    alert('Veuillez écrire du contenu avant d\'utiliser l\'amélioration IA.')
+    return
+  }
+
+  isImproving.value = true
+  
+  try {
+    const improvedText = await improveText(textContent)
+    
+    // Replace content in editor
+    editor.value.commands.setContent(`<p>${improvedText.replace(/\n/g, '</p><p>')}</p>`)
+    
+    // Update chapter store
+    await chapterStore.updateChapterContent(editor.value.getHTML())
+    
+    // Show success toast
+    showToast.value = true
+    setTimeout(() => {
+      showToast.value = false
+    }, 3000)
+    
+  } catch (error) {
+    console.error('Erreur amélioration IA :', error)
+    alert('Erreur lors de l\'amélioration du texte avec l\'IA. Veuillez réessayer.')
+  } finally {
+    isImproving.value = false
+  }
 }
 
 watch(
