@@ -11,9 +11,6 @@
       <option value="brouillon">📝 Brouillon</option>
     </select>
 
-    <div v-if="filteredBooks.length > 0" class="counter">
-      📘 {{ filteredBooks.length }} livre(s) affiché(s)
-    </div>
 
     <div v-else-if="selectedStatus !== 'all'" class="empty">
       Aucun livre à afficher pour ce statut.
