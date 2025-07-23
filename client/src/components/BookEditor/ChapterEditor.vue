@@ -69,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue'
+import { ref, watch, nextTick, getCurrentInstance } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import { useChapterStore } from '@/store/useChapterStore'
@@ -81,6 +81,9 @@ import noteIcon from '@/assets/icons/note-ico.svg?url'
 import addIcon from '@/assets/icons/add-ico.svg?url'
 import trashIcon from '@/assets/icons/trash-ico.svg?url'
 import aiIcon from '@/assets/icons/ai-ico.svg?url'
+
+const { proxy } = getCurrentInstance()!
+const matomo = proxy?.$matomo
 
 const chapterStore = useChapterStore()
 const noteStore = useNoteStore()
@@ -180,6 +183,8 @@ const createNote = async () => {
     chapter_id: chapterId,
     content: 'Nouvelle note',
   })
+  matomo?.trackEvent('note', 'add')
+
 
   if (newNote) notes.value.push(newNote)
 }

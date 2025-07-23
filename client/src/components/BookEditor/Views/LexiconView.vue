@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref,getCurrentInstance } from 'vue'
 import axios from 'axios'
 
 // Import SVG icons
@@ -58,7 +58,8 @@ const definition = ref('')
 const synonyms = ref<string[]>([])
 const loading = ref(false)
 const error = ref('')
-
+const { proxy } = getCurrentInstance()!
+const matomo = proxy?.$matomo
 const search = async () => {
   if (!query.value.trim()) return
 
@@ -71,6 +72,7 @@ const search = async () => {
     const word = query.value.trim().toLowerCase()
     const res = await axios.get(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`)
     const data = res.data[0]
+    matomo?.trackEvent('encyclopedia', 'open')
 
     definition.value =
       data.meanings?.[0]?.definitions?.[0]?.definition || 'Définition non trouvée.'

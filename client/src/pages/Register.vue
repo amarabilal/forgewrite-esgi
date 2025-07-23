@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, getCurrentInstance } from 'vue'
 import api from '@/services/api'
 import { useRouter } from 'vue-router'
 
@@ -70,6 +70,9 @@ const error = ref('')
 const success = ref('')
 const router = useRouter()
 
+const { proxy } = getCurrentInstance()!
+const matomo = proxy?.$matomo
+
 const handleRegister = async () => {
   try {
     error.value = ''
@@ -77,8 +80,10 @@ const handleRegister = async () => {
 
     const res = await api.post('/auth/register', {
       email: email.value,
-      password: password.value
+      password: password.value,
     })
+
+    matomo?.trackEvent('user', 'signup')
 
     success.value = res.data.message
     router.push('/login')
@@ -87,6 +92,7 @@ const handleRegister = async () => {
   }
 }
 </script>
+
 
 <style scoped>
 .register-page {

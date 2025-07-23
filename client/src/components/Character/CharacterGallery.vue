@@ -1,49 +1,52 @@
 <template>
-    <div class="gallery-container">
-      <div class="toolbar">
-        <h2>🎭 Personnages</h2>
-        <button @click="addCharacter">➕ Ajouter</button>
-      </div>
-  
-      <div v-if="characterStore.characters.length === 0" class="empty">
-        Aucun personnage pour le moment.
-      </div>
-  
-      <div class="grid">
-        <CharacterCard
-          v-for="char in characterStore.characters"
-          :key="char.id"
-          :character="char"
-          @click="selectCharacter(char)"
-        />
-      </div>
+  <div class="gallery-container">
+    <div class="toolbar">
+      <h2>🎭 Personnages</h2>
+      <button @click="addCharacter">➕ Ajouter</button>
     </div>
-  </template>
-  
-  <script setup lang="ts">
+
+    <div v-if="characterStore.characters.length === 0" class="empty">
+      Aucun personnage pour le moment.
+    </div>
+
+    <div class="grid">
+      <CharacterCard
+        v-for="char in characterStore.characters"
+        :key="char.id"
+        :character="char"
+        @click="selectCharacter(char)"
+      />
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
   import { useRoute } from 'vue-router'
-  import { onMounted } from 'vue'
+  import { onMounted, getCurrentInstance } from 'vue'
   import { useCharacterStore } from '@/store/useCharacterStore'
   import CharacterCard from './CharacterCard.vue'
-  
+
   const characterStore = useCharacterStore()
   const route = useRoute()
   const bookId = Number(route.params.id)
-  
+
+  const { proxy } = getCurrentInstance()!
+  const matomo = proxy?.$matomo
+
   onMounted(() => {
     characterStore.fetchCharacters(bookId)
   })
-  
+
   const addCharacter = async () => {
     await characterStore.addCharacter(bookId)
+    matomo?.trackEvent('character', 'add')
   }
-  
+
   const selectCharacter = (char: any) => {
-    // Tu peux router vers une vue détaillée ou ouvrir une modal
     alert(`Sélectionné : ${char.name}`)
   }
-  </script>
-  
+</script>
+
   <style scoped>
   .gallery-container {
     padding: 2rem;

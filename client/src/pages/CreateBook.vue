@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, getCurrentInstance } from 'vue'
 import api from '@/services/api'
 import { useRouter } from 'vue-router'
 
@@ -60,13 +60,19 @@ const error = ref('')
 
 const router = useRouter()
 
+
+const { proxy } = getCurrentInstance()!
+const matomo = proxy?.$matomo
+
 const createBook = async () => {
   try {
     const res = await api.post('/books', {
       title: title.value,
       genre: genre.value,
-      description: description.value
+      description: description.value,
     })
+
+    matomo?.trackEvent('book', 'create') // 📊 Suivi création de livre
 
     const bookId = res.data.data?.id || res.data.id
 
@@ -74,8 +80,10 @@ const createBook = async () => {
       book_id: bookId,
       title: 'Chapitre 1',
       content: '',
-      order_index: 0
+      order_index: 0,
     })
+
+    matomo?.trackEvent('chapter', 'add') // 📊 Suivi ajout de chapitre
 
     router.push(`/books/${bookId}`)
   } catch (err: any) {
@@ -83,6 +91,7 @@ const createBook = async () => {
   }
 }
 </script>
+
 
 <style scoped>
 .create-book {

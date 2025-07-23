@@ -57,7 +57,7 @@
   </template>
 
   <script setup lang="ts">
-  import { ref, onMounted } from 'vue'
+  import { ref, onMounted, getCurrentInstance } from 'vue'
   import { useRoute } from 'vue-router'
   import { useMapStore } from '@/store/useMapStore'
   import type { MapItem } from '@/store/useMapStore'
@@ -73,6 +73,9 @@
   const route = useRoute()
   const bookId = Number(route.params.id)
   const mapStore = useMapStore()
+
+  const { proxy } = getCurrentInstance()!
+  const matomo = proxy?.$matomo
 
   const selected = ref<MapItem | null>(null)
   const canvasRef = ref<HTMLElement | null>(null)
@@ -101,6 +104,7 @@
     newItem.value.name = ''
     newItem.value.description = ''
     await mapStore.fetchMapItems(bookId)
+    matomo?.trackEvent('map', 'used')
   }
 
   const select = (item: MapItem) => {

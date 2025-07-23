@@ -83,7 +83,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, getCurrentInstance } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/store/authStore'
 
@@ -96,6 +96,10 @@ const token2FA = ref('')
 const error = ref('')
 const requires2FA = ref(false)
 
+
+const { proxy } = getCurrentInstance()!
+const matomo = proxy?.$matomo
+
 const handleLogin = async () => {
   try {
     error.value = ''
@@ -104,6 +108,9 @@ const handleLogin = async () => {
       password: password.value,
       token2FA: token2FA.value || undefined,
     })
+
+    matomo?.trackEvent('user', 'login')
+
     router.push('/dashboard')
   } catch (err: any) {
     if (err.is2FARequired) {
@@ -114,6 +121,7 @@ const handleLogin = async () => {
   }
 }
 </script>
+
 
 <style scoped>
 .login-page {

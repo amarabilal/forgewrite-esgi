@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, onBeforeUnmount, getCurrentInstance } from 'vue'
 import { useRoute } from 'vue-router'
 import { useChapterStore } from '@/store/useChapterStore'
 
@@ -44,6 +44,9 @@ const isReady = ref(false)
 const route = useRoute()
 const chapterStore = useChapterStore()
 
+const { proxy } = getCurrentInstance()!
+const matomo = proxy?.$matomo
+
 function setActiveView(view: string) {
   activeView.value = view
 }
@@ -52,6 +55,7 @@ const loadEditorData = async (bookId: string) => {
   isReady.value = false
   try {
     await chapterStore.fetchChapters(Number(bookId))
+    matomo?.trackTimer('editor', 'duration').start()
     isReady.value = true
   } catch (error) {
     console.error('Erreur de chargement du livre :', error)
@@ -70,7 +74,12 @@ watch(
     if (newId) loadEditorData(newId as string)
   }
 )
+
+onBeforeUnmount(() => {
+  matomo?.trackTimer('editor', 'duration').stop()
+})
 </script>
+
 
 <style scoped>
 .book-editor {

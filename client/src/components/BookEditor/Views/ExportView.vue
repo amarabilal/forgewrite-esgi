@@ -30,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, getCurrentInstance } from 'vue'
 import { useRoute } from 'vue-router'
 import html2pdf from 'html2pdf.js'
 
@@ -51,6 +51,9 @@ const chapterStore = useChapterStore()
 const isExporting = ref(false)
 const showToast = ref(false)
 const toastMessage = ref('')
+
+const { proxy } = getCurrentInstance()!
+const matomo = proxy?.$matomo
 
 const showToastMessage = (message: string) => {
   toastMessage.value = message
@@ -110,6 +113,7 @@ const exportToPDF = async () => {
     }).from(wrapper).save()
 
     showToastMessage(`PDF "${book.title}" généré avec succès!`)
+    matomo?.trackEvent('export', 'pdf')
   } catch (error) {
     showToastMessage("Erreur lors de la génération du PDF.")
     console.error('Export PDF error:', error)
