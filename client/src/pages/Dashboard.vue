@@ -12,7 +12,7 @@
     </select>
 
 
-    <div v-else-if="selectedStatus !== 'all'" class="empty">
+    <div v-if="selectedStatus !== 'all'" class="empty">
       Aucun livre à afficher pour ce statut.
     </div>
 
