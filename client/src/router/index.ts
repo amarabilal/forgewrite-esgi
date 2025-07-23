@@ -21,6 +21,12 @@ const routes = [
     component: () => import('@/pages/BookEditor.vue'),
     meta: { requiresAuth: true }
   },
+  {
+    path: '/admin',
+    name: 'AdminDashboard',
+    component: () => import('@/pages/Admin/AdminDashboard.vue'),
+    meta: { requiresAuth: true, requiresAdmin: true }
+  },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
   { path: '/profile', component: Profile, meta: { requiresAuth: true } },
 ]
@@ -32,9 +38,15 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const auth = useAuthStore()
+  
   if (to.meta.requiresAuth && !auth.token) {
     return next('/login')
   }
+  
+  if (to.meta.requiresAdmin && (!auth.user || auth.user.role !== 'admin')) {
+    return next('/dashboard')
+  }
+  
   next()
 })
 

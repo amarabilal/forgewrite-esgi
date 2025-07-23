@@ -3,7 +3,25 @@ const prisma = require('../../config/db');
 // Admin: CRUD for Books
 exports.getAllBooks = async (req, res) => {
   try {
-    const books = await prisma.book.findMany();
+    const books = await prisma.book.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            role: true
+          }
+        },
+        _count: {
+          select: {
+            chapters: true,
+            characters: true,
+            comments: true
+          }
+        }
+      },
+      orderBy: { created_at: 'desc' }
+    });
     res.json({ message: 'All books fetched successfully.', data: books });
   } catch (error) {
     console.error('Error fetching all books:', error);
@@ -15,7 +33,43 @@ exports.getBookById = async (req, res) => {
   const id = parseInt(req.params.id, 10);
   if (isNaN(id)) return res.status(400).json({ message: 'Invalid book ID.' });
   try {
-    const book = await prisma.book.findUnique({ where: { id } });
+    const book = await prisma.book.findUnique({ 
+      where: { id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            role: true
+          }
+        },
+        chapters: {
+          select: {
+            id: true,
+            title: true,
+            order_index: true,
+            updated_at: true
+          },
+          orderBy: { order_index: 'asc' }
+        },
+        characters: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+            gender: true,
+            age: true
+          }
+        },
+        _count: {
+          select: {
+            chapters: true,
+            characters: true,
+            comments: true
+          }
+        }
+      }
+    });
     if (!book) return res.status(404).json({ message: 'Book not found.' });
     res.json({ message: 'Book fetched successfully.', data: book });
   } catch (error) {

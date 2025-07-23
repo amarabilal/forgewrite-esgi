@@ -28,7 +28,7 @@ model Book {
   genre       String?
   status      String?
   created_at  DateTime    @default(now())
-  user        users       @relation(fields: [user_id], references: [id])
+  user        users       @relation(fields: [user_id], references: [id], onDelete: Cascade)
   chapters    Chapter[]
   characters  Character[]
   mapItems    MapItem[]

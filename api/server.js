@@ -12,6 +12,16 @@ const characterRoutes = require('./src/routes/characterRoutes');
 const mapItemRoutes = require('./src/routes/mapItemRoutes');
 const statRoutes = require('./src/routes/statRoutes');
 
+// Admin routes
+const adminUserRoutes = require('./src/routes/adminUserRoutes');
+const adminBookRoutes = require('./src/routes/adminBookRoutes');
+const adminChapterRoutes = require('./src/routes/adminChapterRoutes');
+const adminCharacterRoutes = require('./src/routes/adminCharacterRoutes');
+const adminCommentRoutes = require('./src/routes/adminCommentRoutes');
+const adminMapItemRoutes = require('./src/routes/adminMapItemRoutes');
+const adminNoteRoutes = require('./src/routes/adminNoteRoutes');
+const adminStatRoutes = require('./src/routes/adminStatRoutes');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -39,6 +49,16 @@ app.use('/api/comments', commentRoutes);
 app.use('/api/characters', characterRoutes);
 app.use('/api/map-items', mapItemRoutes);
 app.use('/api/stats', statRoutes);
+
+// Admin routes
+app.use('/api/admin/users', adminUserRoutes);
+app.use('/api/admin/books', adminBookRoutes);
+app.use('/api/admin/chapters', adminChapterRoutes);
+app.use('/api/admin/characters', adminCharacterRoutes);
+app.use('/api/admin/comments', adminCommentRoutes);
+app.use('/api/admin/map-items', adminMapItemRoutes);
+app.use('/api/admin/notes', adminNoteRoutes);
+app.use('/api/admin/stats', adminStatRoutes);
 
 // Basic route
 app.get('/', (req, res) => {

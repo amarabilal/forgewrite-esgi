@@ -7,6 +7,7 @@
     <div class="nav-right">
       <template v-if="isAuthenticated">
         <RouterLink to="/dashboard">Dashboard</RouterLink>
+        <RouterLink v-if="isAdmin" to="/admin" class="admin-link">Admin</RouterLink>
         <RouterLink to="/profile" class="username">{{ user?.email }}</RouterLink>
         <button @click="logout">Se déconnecter</button>
       </template>
@@ -28,6 +29,7 @@
 
   const isAuthenticated = computed(() => !!auth.token)
   const user = computed(() => auth.user)
+  const isAdmin = computed(() => auth.user?.role === 'admin')
 
   const logout = async () => {
     await auth.logout()
@@ -78,6 +80,17 @@
     opacity: 0.8;
     text-decoration: none;
     cursor: pointer;
+  }
+
+  .admin-link {
+    background: rgba(252, 248, 237, 0.1);
+    padding: 0.3rem 0.8rem;
+    border-radius: 4px;
+    border: 1px solid rgba(252, 248, 237, 0.3);
+  }
+
+  .admin-link:hover {
+    background: rgba(252, 248, 237, 0.2);
   }
 
   button {
