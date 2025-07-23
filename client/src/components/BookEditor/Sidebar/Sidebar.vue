@@ -35,7 +35,7 @@ const menu = [
   { label: 'Objectifs', icon: goalIcon },
   { label: 'Carte mentale', icon: carteIcon },
   { label: 'Trouver des mots', icon: langIcon },
-  { label: 'Assistant d\'écriture', icon: aiIcon },
+//  { label: 'Assistant d\'écriture', icon: aiIcon },
   { label: 'Commentaires', icon: commentIcon },
   { label: 'Exporter en PDF', icon: exportIcon }
 ]
