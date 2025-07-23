@@ -36,16 +36,6 @@
     <section class="character-form" v-if="selected">
       <div class="form-header">
         <h2>{{ selected.name || 'Sans nom' }}</h2>
-        <div class="role-indicator">
-          <span class="role-label">Role</span>
-          <div class="role-dots">
-            <div class="dot active"></div>
-            <div class="dot active"></div>
-            <div class="dot active"></div>
-            <div class="dot active"></div>
-            <div class="dot"></div>
-          </div>
-        </div>
       </div>
       
       <div class="form-grid">
@@ -372,35 +362,6 @@ watch(
   border-radius: 8px;
   font-size: 1.2rem;
   font-weight: 600;
-}
-
-.role-indicator {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-left: 0.5rem;
-}
-
-.role-label {
-  font-weight: 600;
-  color: #666;
-}
-
-.role-dots {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: #ddd;
-  transition: background-color 0.2s;
-}
-
-.dot.active {
-  background-color: #3C68C2;
 }
 
 .form-grid {
